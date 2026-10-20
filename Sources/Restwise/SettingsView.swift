@@ -34,6 +34,7 @@ struct SettingsView: View {
     @AppStorage(Pref.showCountdown) private var showCountdown = false
     @AppStorage(Pref.completionSound) private var completionSound = true
     @AppStorage(Pref.startSound) private var startSound = true
+    @AppStorage(Pref.watchingCountsAsActive) private var watchingCountsAsActive = true
     @ObservedObject var loginItem: LoginItemModel
 
     var body: some View {
@@ -69,11 +70,12 @@ struct SettingsView: View {
             } header: {
                 Text("Nudges")
             } footer: {
-                Text("A break counts down only while your hands are off the keyboard and mouse. If you step away on your own for long enough, Restwise counts it as a break.")
+                Text("A break counts down only while your hands are off the keyboard and mouse and no video is playing. If you step away on your own for long enough, Restwise counts it as a break.")
                     .foregroundStyle(.secondary)
             }
             Section("General") {
                 Toggle("Show minutes until next break in menu bar", isOn: $showCountdown)
+                Toggle("Count watching video as screen time", isOn: $watchingCountsAsActive)
                 Toggle("Strike a small gong when a break starts", isOn: $startSound)
                 Toggle("Strike a gong when a break ends", isOn: $completionSound)
                 Toggle("Launch at login", isOn: Binding(get: { loginItem.enabled }, set: { loginItem.set($0) }))

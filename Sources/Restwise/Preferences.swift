@@ -18,6 +18,7 @@ enum Pref {
     static let showCountdown = "showCountdown"
     static let completionSound = "completionSound"
     static let startSound = "startSound"
+    static let watchingCountsAsActive = "watchingCountsAsActive"
     static let snoozeMinutes = "snoozeMinutes"
 
     static func registerDefaults() {
@@ -37,6 +38,7 @@ enum Pref {
             showCountdown: false,
             completionSound: true,
             startSound: true,
+            watchingCountsAsActive: true,
             snoozeMinutes: 5.0,
         ])
     }

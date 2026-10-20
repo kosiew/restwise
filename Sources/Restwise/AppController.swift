@@ -1,5 +1,6 @@
 import AppKit
 import CoreGraphics
+import IOKit.pwr_mgt
 import RestwiseCore
 import SwiftUI
 
@@ -33,8 +34,10 @@ final class AppController: NSObject, NSApplicationDelegate {
         let now = Date()
         let gap = now.timeIntervalSince(lastTick)
         lastTick = now
+        // Watching video counts as screen time even with hands off the input devices.
+        let inputIdle = UserDefaults.standard.bool(forKey: Pref.watchingCountsAsActive) && Self.isVideoPlaying() ? 0 : Self.secondsSinceLastInput()
         // After sleep the timer fires late; treat the whole gap as time away.
-        let idle = Pref.demoActiveUser ? 0 : max(Self.secondsSinceLastInput(), gap > 5 ? gap : 0)
+        let idle = Pref.demoActiveUser ? 0 : max(inputIdle, gap > 5 ? gap : 0)
         let config = Pref.breakConfig
 
         for event in engine.tick(dt: gap, idle: idle, now: now, config: config) {
@@ -80,6 +83,14 @@ final class AppController: NSObject, NSApplicationDelegate {
         // kCGAnyInputEventType: keyboard, mouse, trackpad, scroll.
         let anyInput = CGEventType(rawValue: ~0)!
         return CGEventSource.secondsSinceLastEventType(.combinedSessionState, eventType: anyInput)
+    }
+
+    /// Video players hold a "prevent display sleep" power assertion while playing.
+    static func isVideoPlaying() -> Bool {
+        var status: Unmanaged<CFDictionary>?
+        guard IOPMCopyAssertionsStatus(&status) == kIOReturnSuccess,
+              let dict = status?.takeRetainedValue() as? [String: Int] else { return false }
+        return (dict[kIOPMAssertPreventUserIdleDisplaySleep] ?? 0) > 0
     }
 
     // MARK: - Actions
