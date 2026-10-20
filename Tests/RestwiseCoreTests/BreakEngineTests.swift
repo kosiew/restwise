@@ -111,3 +111,19 @@ private func run(_ engine: inout BreakEngine, seconds: Int, idle: TimeInterval =
     run(&engine, seconds: 5, idle: 10, config: custom)
     #expect(engine.rested == 5)
 }
+
+@Test func videoPlayingCountsAsActive() {
+    #expect(effectiveIdle(input: 300, sinceVideo: 0) == 0)
+    #expect(effectiveIdle(input: 300, sinceVideo: nil) == 300)
+}
+
+@Test func briefVideoGapWithoutInputIsNotIdle() {
+    // Chrome drops its wake lock for a few seconds between clips.
+    #expect(effectiveIdle(input: 300, sinceVideo: 5) == 0)
+    #expect(effectiveIdle(input: 300, sinceVideo: 90) == 30)
+}
+
+@Test func inputAfterVideoStopsUsesInputIdle() {
+    // The user paused the video, then took their hands off.
+    #expect(effectiveIdle(input: 10, sinceVideo: 15) == 10)
+}

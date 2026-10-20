@@ -12,6 +12,7 @@ final class AppController: NSObject, NSApplicationDelegate {
     private let glow = EdgeGlowController()
     private var timer: Timer?
     private var lastTick = Date()
+    private var lastVideoSeen: Date?
     private var settingsWindow: NSWindow?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -35,7 +36,12 @@ final class AppController: NSObject, NSApplicationDelegate {
         let gap = now.timeIntervalSince(lastTick)
         lastTick = now
         // Watching video counts as screen time even with hands off the input devices.
-        let inputIdle = UserDefaults.standard.bool(forKey: Pref.watchingCountsAsActive) && Self.isVideoPlaying() ? 0 : Self.secondsSinceLastInput()
+        var sinceVideo: TimeInterval?
+        if UserDefaults.standard.bool(forKey: Pref.watchingCountsAsActive) {
+            if Self.isVideoPlaying() { lastVideoSeen = now }
+            sinceVideo = lastVideoSeen.map { now.timeIntervalSince($0) }
+        }
+        let inputIdle = effectiveIdle(input: Self.secondsSinceLastInput(), sinceVideo: sinceVideo)
         // After sleep the timer fires late; treat the whole gap as time away.
         let idle = Pref.demoActiveUser ? 0 : max(inputIdle, gap > 5 ? gap : 0)
         let config = Pref.breakConfig
