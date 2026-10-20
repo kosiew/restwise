@@ -73,7 +73,7 @@ struct SettingsView: View {
             }
             Section("General") {
                 Toggle("Show minutes until next break in menu bar", isOn: $showCountdown)
-                Toggle("Play a soft sound when a break ends", isOn: $completionSound)
+                Toggle("Strike a gong when a break ends", isOn: $completionSound)
                 Toggle("Launch at login", isOn: Binding(get: { loginItem.enabled }, set: { loginItem.set($0) }))
                 if let error = loginItem.error {
                     Text(error).font(.caption).foregroundStyle(.red)

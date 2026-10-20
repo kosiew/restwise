@@ -10,7 +10,7 @@ Stretchly covers your screen with a big dialog. Restwise starts small and only g
 | Break due | A slim pill slides in under the menu bar with a tip and countdown | No | No |
 | Still ignoring it after 45 s | A soft, breathing glow fades in around the screen edges | No | No (click-through) |
 | Resting | Countdown runs; glow fades away | — | — |
-| Done | Pill shows a checkmark and fades out, with an optional soft sound | — | — |
+| Done | Pill shows a checkmark and fades out, with an optional gong | — | — |
 
 **How breaks count down:** the countdown only advances while your hands are off the keyboard and mouse. You can't sit through a break while still typing; you have to actually stop. If you've already stepped away for longer than a break on your own (coffee, a meeting, a locked screen, sleep), Restwise counts it as a break and resets the timer.
 

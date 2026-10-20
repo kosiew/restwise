@@ -46,9 +46,7 @@ final class AppController: NSObject, NSApplicationDelegate {
                 glow.intensity = 0
                 pill.finish()
                 if UserDefaults.standard.bool(forKey: Pref.completionSound) {
-                    let sound = NSSound(named: "Purr")
-                    sound?.volume = 0.35
-                    sound?.play()
+                    Gong.play()
                 }
             case .naturalBreak, .resumed:
                 break
