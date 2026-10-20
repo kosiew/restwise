@@ -17,6 +17,7 @@ enum Pref {
     static let glowMaxIntensity = "glowMaxIntensity"
     static let showCountdown = "showCountdown"
     static let completionSound = "completionSound"
+    static let startSound = "startSound"
     static let snoozeMinutes = "snoozeMinutes"
 
     static func registerDefaults() {
@@ -35,6 +36,7 @@ enum Pref {
             glowMaxIntensity: 0.55,
             showCountdown: false,
             completionSound: true,
+            startSound: true,
             snoozeMinutes: 5.0,
         ])
     }

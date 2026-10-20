@@ -33,6 +33,7 @@ struct SettingsView: View {
     @AppStorage(Pref.glowMaxIntensity) private var glowMax = 0.55
     @AppStorage(Pref.showCountdown) private var showCountdown = false
     @AppStorage(Pref.completionSound) private var completionSound = true
+    @AppStorage(Pref.startSound) private var startSound = true
     @ObservedObject var loginItem: LoginItemModel
 
     var body: some View {
@@ -73,6 +74,7 @@ struct SettingsView: View {
             }
             Section("General") {
                 Toggle("Show minutes until next break in menu bar", isOn: $showCountdown)
+                Toggle("Strike a small gong when a break starts", isOn: $startSound)
                 Toggle("Strike a gong when a break ends", isOn: $completionSound)
                 Toggle("Launch at login", isOn: Binding(get: { loginItem.enabled }, set: { loginItem.set($0) }))
                 if let error = loginItem.error {

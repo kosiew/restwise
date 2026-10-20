@@ -41,12 +41,15 @@ final class AppController: NSObject, NSApplicationDelegate {
             switch event {
             case .breakDue(let kind):
                 pill.show(kind)
+                if UserDefaults.standard.bool(forKey: Pref.startSound) {
+                    Gong.play(.small)
+                }
             case .breakCompleted:
                 DailyStats.recordTaken()
                 glow.intensity = 0
                 pill.finish()
                 if UserDefaults.standard.bool(forKey: Pref.completionSound) {
-                    Gong.play()
+                    Gong.play(.large)
                 }
             case .naturalBreak, .resumed:
                 break

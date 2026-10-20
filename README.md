@@ -7,7 +7,7 @@ Stretchly covers your screen with a big dialog. Restwise starts small and only g
 | Stage | What you see | Steals focus? | Blocks clicks? |
 |---|---|---|---|
 | Working | A small ring in the menu bar fills toward the next break | No | No |
-| Break due | A slim pill slides in under the menu bar with a tip and countdown | No | No |
+| Break due | A slim pill slides in under the menu bar with a tip and countdown, and an optional small gong | No | No |
 | Still ignoring it after 45 s | A soft, breathing glow fades in around the screen edges | No | No (click-through) |
 | Resting | Countdown runs; glow fades away | — | — |
 | Done | Pill shows a checkmark and fades out, with an optional gong | — | — |

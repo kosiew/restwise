@@ -1,12 +1,16 @@
 import AppKit
 
-/// A synthesized gong strike, played when a break ends. Built in code so the
-/// app needs no bundled audio resources.
+/// Synthesized gong strikes: a small one when a break starts, a large one
+/// when it ends. Built in code so the app needs no bundled audio resources.
 @MainActor
 enum Gong {
-    private static let sound: NSSound? = NSSound(data: wav(samples: synthesize()))
+    enum Size { case small, large }
 
-    static func play() {
+    private static let small = NSSound(data: wav(samples: synthesize(fundamental: 196, duration: 2.5, level: 0.5)))
+    private static let large = NSSound(data: wav(samples: synthesize(fundamental: 98, duration: 5, level: 0.8)))
+
+    static func play(_ size: Size) {
+        let sound = size == .small ? small : large
         sound?.stop()
         sound?.play()
     }
@@ -14,15 +18,15 @@ enum Gong {
     private static let sampleRate = 44_100.0
 
     /// Inharmonic partials with independent decays, plus a short mallet thump.
-    private static func synthesize() -> [Float] {
-        let fundamental = 98.0
+    private static func synthesize(fundamental: Double, duration: Double, level: Float) -> [Float] {
+        // Smaller gongs ring for less time.
+        let decayScale = duration / 5
         // (frequency ratio, amplitude, decay seconds)
         let partials: [(Double, Double, Double)] = [
             (1.00, 1.00, 4.5), (1.006, 0.6, 4.5), // detuned pair for a slow shimmer
             (1.52, 0.55, 3.2), (2.00, 0.45, 2.6), (2.66, 0.40, 2.0),
             (3.17, 0.30, 1.6), (4.10, 0.22, 1.1), (5.43, 0.15, 0.7), (7.30, 0.10, 0.4),
         ]
-        let duration = 5.0
         let count = Int(duration * sampleRate)
         var out = [Float](repeating: 0, count: count)
         var noise: UInt32 = 0x9E37_79B9
@@ -33,7 +37,7 @@ enum Gong {
             var v = 0.0
             for (ratio, amp, decay) in partials {
                 let bloom = ratio > 2 ? min(1, 0.4 + t / 0.15) : 1
-                v += amp * bloom * exp(-t / decay) * sin(2 * .pi * fundamental * ratio * t)
+                v += amp * bloom * exp(-t / (decay * decayScale)) * sin(2 * .pi * fundamental * ratio * t)
             }
             noise = noise &* 1_664_525 &+ 1_013_904_223
             let thump = (Double(noise) / Double(UInt32.max) * 2 - 1) * exp(-t / 0.015) * 0.5
@@ -41,7 +45,7 @@ enum Gong {
             out[i] = Float((v * attack + thump) * fadeOut)
         }
         let peak = out.map(abs).max() ?? 1
-        return out.map { $0 / peak * 0.8 }
+        return out.map { $0 / peak * level }
     }
 
     /// 16-bit mono PCM WAV.
