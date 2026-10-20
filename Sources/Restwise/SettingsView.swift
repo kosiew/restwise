@@ -24,6 +24,9 @@ struct SettingsView: View {
     @AppStorage(Pref.longEnabled) private var longEnabled = true
     @AppStorage(Pref.longIntervalMinutes) private var longInterval = 60.0
     @AppStorage(Pref.longDurationMinutes) private var longDuration = 5.0
+    @AppStorage(Pref.microStepAwaySeconds) private var microStepAway = 20.0
+    @AppStorage(Pref.longStepAwayMinutes) private var longStepAway = 5.0
+    @AppStorage(Pref.restThresholdSeconds) private var restThreshold = 2.0
     @AppStorage(Pref.snoozeMinutes) private var snooze = 5.0
     @AppStorage(Pref.glowEnabled) private var glowEnabled = true
     @AppStorage(Pref.glowGraceSeconds) private var glowGrace = 45.0
@@ -40,6 +43,8 @@ struct SettingsView: View {
                     .disabled(!microEnabled)
                 Stepper("For \(Int(microDuration)) seconds", value: $microDuration, in: 10...120, step: 5)
                     .disabled(!microEnabled)
+                Stepper("Stepping away for \(Int(microStepAway)) seconds counts", value: $microStepAway, in: 10...300, step: 5)
+                    .disabled(!microEnabled)
             }
             Section("Long breaks") {
                 Toggle("Remind me to get up and move", isOn: $longEnabled)
@@ -47,8 +52,11 @@ struct SettingsView: View {
                     .disabled(!longEnabled)
                 Stepper("For \(Int(longDuration)) minutes", value: $longDuration, in: 1...30)
                     .disabled(!longEnabled)
+                Stepper("Stepping away for \(Int(longStepAway)) minutes counts", value: $longStepAway, in: 1...30)
+                    .disabled(!longEnabled)
             }
             Section {
+                Stepper("Break counts down after \(Int(restThreshold)) seconds hands-off", value: $restThreshold, in: 1...30)
                 Stepper("Snooze for \(Int(snooze)) minutes", value: $snooze, in: 1...30)
                 Toggle("Glow around the screen edges if I keep working", isOn: $glowEnabled)
                 Stepper("Start glowing after \(Int(glowGrace)) seconds", value: $glowGrace, in: 0...300, step: 15)
@@ -60,7 +68,7 @@ struct SettingsView: View {
             } header: {
                 Text("Nudges")
             } footer: {
-                Text("A break counts down only while your hands are off the keyboard and mouse. If you step away on your own, Restwise counts it as a break.")
+                Text("A break counts down only while your hands are off the keyboard and mouse. If you step away on your own for long enough, Restwise counts it as a break.")
                     .foregroundStyle(.secondary)
             }
             Section("General") {

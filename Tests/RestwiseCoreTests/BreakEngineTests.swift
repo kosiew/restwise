@@ -93,3 +93,21 @@ private func run(_ engine: inout BreakEngine, seconds: Int, idle: TimeInterval =
     #expect(run(&engine, seconds: 2 * 60 * 60, config: cfg).isEmpty)
     #expect(engine.next(cfg) == nil)
 }
+
+@Test func stepAwayThresholdIsIndependentOfBreakLength() {
+    let custom = BreakConfig(microDuration: 20, microStepAway: 60)
+    var engine = BreakEngine()
+    run(&engine, seconds: 60, config: custom)
+    #expect(engine.tick(dt: 1, idle: 30, now: now, config: custom).isEmpty)
+    #expect(engine.tick(dt: 1, idle: 60, now: now, config: custom) == [.naturalBreak(.micro)])
+}
+
+@Test func restThresholdGatesBreakCountdown() {
+    let custom = BreakConfig(microDuration: 20, restThreshold: 10)
+    var engine = BreakEngine()
+    engine.startBreak(.micro)
+    run(&engine, seconds: 5, idle: 5, config: custom)
+    #expect(engine.rested == 0)
+    run(&engine, seconds: 5, idle: 10, config: custom)
+    #expect(engine.rested == 5)
+}

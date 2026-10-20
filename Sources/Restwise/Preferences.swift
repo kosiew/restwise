@@ -9,6 +9,9 @@ enum Pref {
     static let longEnabled = "longEnabled"
     static let longIntervalMinutes = "longIntervalMinutes"
     static let longDurationMinutes = "longDurationMinutes"
+    static let microStepAwaySeconds = "microStepAwaySeconds"
+    static let longStepAwayMinutes = "longStepAwayMinutes"
+    static let restThresholdSeconds = "restThresholdSeconds"
     static let glowEnabled = "glowEnabled"
     static let glowGraceSeconds = "glowGraceSeconds"
     static let glowMaxIntensity = "glowMaxIntensity"
@@ -24,6 +27,9 @@ enum Pref {
             longEnabled: true,
             longIntervalMinutes: 60.0,
             longDurationMinutes: 5.0,
+            microStepAwaySeconds: 20.0,
+            longStepAwayMinutes: 5.0,
+            restThresholdSeconds: 2.0,
             glowEnabled: true,
             glowGraceSeconds: 45.0,
             glowMaxIntensity: 0.55,
@@ -42,7 +48,8 @@ enum Pref {
 
     static var breakConfig: BreakConfig {
         if demo {
-            return BreakConfig(microInterval: 15, microDuration: 8, longInterval: 70, longDuration: 15, mergeWindow: 5)
+            return BreakConfig(microInterval: 15, microDuration: 8, longInterval: 70, longDuration: 15,
+                               microStepAway: 8, longStepAway: 15, mergeWindow: 5)
         }
         return BreakConfig(
             microEnabled: d.bool(forKey: microEnabled),
@@ -50,7 +57,10 @@ enum Pref {
             microDuration: d.double(forKey: microDurationSeconds),
             longEnabled: d.bool(forKey: longEnabled),
             longInterval: d.double(forKey: longIntervalMinutes) * 60,
-            longDuration: d.double(forKey: longDurationMinutes) * 60
+            longDuration: d.double(forKey: longDurationMinutes) * 60,
+            microStepAway: d.double(forKey: microStepAwaySeconds),
+            longStepAway: d.double(forKey: longStepAwayMinutes) * 60,
+            restThreshold: d.double(forKey: restThresholdSeconds)
         )
     }
 

@@ -14,6 +14,10 @@ public struct BreakConfig: Equatable, Sendable {
     public var longEnabled: Bool
     public var longInterval: TimeInterval
     public var longDuration: TimeInterval
+    /// Idle time while working that counts as a self-taken eye break.
+    public var microStepAway: TimeInterval
+    /// Idle time while working that counts as a self-taken long break.
+    public var longStepAway: TimeInterval
     /// Seconds without keyboard/mouse input before we consider the user "resting".
     public var restThreshold: TimeInterval
     /// If a micro break comes due this close to a long break, take the long one instead.
@@ -26,6 +30,8 @@ public struct BreakConfig: Equatable, Sendable {
         longEnabled: Bool = true,
         longInterval: TimeInterval = 60 * 60,
         longDuration: TimeInterval = 5 * 60,
+        microStepAway: TimeInterval = 20,
+        longStepAway: TimeInterval = 5 * 60,
         restThreshold: TimeInterval = 2,
         mergeWindow: TimeInterval = 3 * 60
     ) {
@@ -35,6 +41,8 @@ public struct BreakConfig: Equatable, Sendable {
         self.longEnabled = longEnabled
         self.longInterval = longInterval
         self.longDuration = longDuration
+        self.microStepAway = microStepAway
+        self.longStepAway = longStepAway
         self.restThreshold = restThreshold
         self.mergeWindow = mergeWindow
     }
@@ -48,7 +56,7 @@ public struct BreakConfig: Equatable, Sendable {
     }
 
     /// Idle time after which work time stops accumulating (the user has stepped away).
-    var awayThreshold: TimeInterval { min(microDuration, 30) }
+    var awayThreshold: TimeInterval { min(microStepAway, 30) }
 }
 
 public enum EngineEvent: Equatable, Sendable {
@@ -90,11 +98,11 @@ public struct BreakEngine: Sendable {
             }
 
         case .working:
-            if config.longEnabled, idle >= config.longDuration, sinceLong > 0 {
+            if config.longEnabled, idle >= config.longStepAway, sinceLong > 0 {
                 sinceLong = 0
                 sinceMicro = 0
                 events.append(.naturalBreak(.long))
-            } else if config.microEnabled, idle >= config.microDuration, sinceMicro > 0 {
+            } else if config.microEnabled, idle >= config.microStepAway, sinceMicro > 0 {
                 sinceMicro = 0
                 events.append(.naturalBreak(.micro))
             }
